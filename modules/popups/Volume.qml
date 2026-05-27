@@ -8,9 +8,13 @@ import qs.configs
 
 //TODO: smoothen edges on volume box (fix path arcs)
 //TODO: add animations to the opening and closing of window
-//TODO: figure where to put in relation to the volume icon (add click area, etc)
+//TODO: figure where to put in relation to the volume icon in code (add click area, etc)
 //TODO: add dynamic changing of volume icons relative to volume settings
 //TODO: potentially abstract out all volume controls to a singleton for other files to reference
+
+
+// Put the volume into a lazy loader and have an animation upon loading???
+// figure out animations on loading
 
 Scope {
     id: scope
@@ -22,20 +26,21 @@ Scope {
 
     PanelWindow {
         id: root
+        visible: true
         anchors {
             top: true
             right: true
         }
 
         implicitHeight: controlWrapper.implicitHeight + 10
-        implicitWidth: controlWrapper.implicitWidth + 20
+        implicitWidth: control.implicitWidth + 20
         margins.top: -9
-        margins.right: 117
+        margins.right: 119
         color: "transparent"
         
         Shape {
             id: background
-            //anchors.fill: parent
+            visible: true
             preferredRendererType: Shape.CurveRenderer
             ShapePath {
                 fillColor: Colors.tertiary
@@ -73,55 +78,60 @@ Scope {
                 }
                 PathLine { x: 0; y: 0}
             }
-        }
-        ColumnLayout {
-            id: controlWrapper
-            anchors.centerIn: parent
-            spacing: 3
-            Slider {
-                id: control
-                value: sink.audio.volume
-                //visible: false
-                anchors.horizontalCenter: parent.horizontalCenter
-                orientation: Qt.Vertical
 
-                onMoved: {
-                    sink.audio.muted = false
-                    sink.audio.volume = value
-                }
+            ColumnLayout {
+                id: controlWrapper
+                anchors.centerIn: parent
+                spacing: 3
+                Slider {
+                    id: control
+                    value: sink.audio.volume
+                    //visible: false
+                    Layout.alignment: Qt.AlignHCenter
+                    orientation: Qt.Vertical
 
-                background: Rectangle {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    implicitWidth: 6
-                    implicitHeight: 120
-                    width: implicitWidth
-                    radius: 2
-                    color: Colors.primary
+                    onMoved: {
+                        sink.audio.muted = false
+                        sink.audio.volume = value
+                    }
 
-                    Rectangle {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        y: control.handle.y
-                        implicitHeight: parent.height - y
-                        color: Colors.secondary
-                        radius: parent.radius
+                    background: Rectangle {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        implicitWidth: 6
+                        implicitHeight: 120
+                        width: implicitWidth
+                        radius: 2
+                        color: Colors.primary
+
+                        Rectangle {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            y: control.handle.y
+                            implicitHeight: parent.height - y
+                            color: Colors.secondary
+                            radius: parent.radius
+                        }
+                    }
+
+                    handle: Rectangle {
+                        implicitHeight: 20
+                        implicitWidth: 20
+                        radius: 15
+                        x: control.availableWidth / 2 - implicitWidth / 2 
+                        y: control.visualPosition * (control.availableHeight - height)
                     }
                 }
 
-                handle: Rectangle {
-                    implicitHeight: 15
-                    implicitWidth: 15
-                    radius: 15
-                    x: control.availableWidth / 2 - implicitWidth / 2 
-                    y: control.visualPosition * (control.availableHeight - height)
+                Text {
+                    id: text
+                    text: Math.trunc(sink.audio.volume * 100)
+                    Layout.alignment: Qt.AlignHCenter
+                    width: Math.ceil(contentWidth)
+                    font.pointSize: 10
                 }
             }
 
-            Text {
-                text: Math.trunc(sink.audio.volume * 100)
-                anchors.horizontalCenter: parent.horizontalCenter
-                font.pointSize: 10
-            }
+            PropertyAnimation on y { to: background.implicitHeight}
         }
     }
-}
+} 
