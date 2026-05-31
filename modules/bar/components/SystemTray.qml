@@ -1,9 +1,14 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import Quickshell.Services.UPower
 import qs.modules.bar.components
 import qs.components
 import qs.configs
+import qs.modules.popups
+import qs.services
+
+//TODO: move battery to its own service
 
 Rectangle {
     id: root
@@ -11,6 +16,16 @@ Rectangle {
     implicitHeight: trayRow.implicitHeight + 15
     color: Colors.tertiary
     radius: 10
+
+    LazyLoader {
+        id: volLoader
+        active: false
+        Volume{
+            id: volume
+            margins.right: soundIcon
+            margins.top: soundIcon.y
+        }
+    }
 
     RowLayout {
         id: trayRow
@@ -46,12 +61,26 @@ Rectangle {
         }
 
         Loader {
-            sourceComponent: Icon {
-                id: soundIcon
-                text: "\uf028"
-                color: Colors.secondary
+            sourceComponent: Rectangle {
+                id: soundIconCont
+                implicitWidth: 20
+                implicitHeight: soundIcon.implicitHeight
+                color: "transparent"
+
+                Icon {
+                    id: soundIcon
+                    text: AudioService.getSoundIcon()
+                    color: Colors.secondary
+                    anchors.left: parent.left
+                }
+
+                MouseArea {
+                        anchors.fill: parent
+                        onClicked: volLoader.active = !volLoader.active
+                    }
             }
         }
+        
 
         Loader {
             sourceComponent: Icon {

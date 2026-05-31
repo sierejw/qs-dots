@@ -40,7 +40,7 @@ PanelWindow {
     
     ClockWidget {
         id:clock
-        anchors.centerIn: background
+        anchors.centerIn: parent
     }
 
     SystemTray {
@@ -49,6 +49,4 @@ PanelWindow {
         anchors.right: parent.right
         anchors.rightMargin: 20
     }
-
-    Volume{}
 }
