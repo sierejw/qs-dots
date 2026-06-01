@@ -17,15 +17,7 @@ Rectangle {
     color: Colors.tertiary
     radius: 10
 
-    LazyLoader {
-        id: volLoader
-        active: false
-        Volume{
-            id: volume
-            margins.right: soundIcon
-            margins.top: soundIcon.y
-        }
-    }
+    Volume{id:volume}
 
     RowLayout {
         id: trayRow
@@ -76,7 +68,11 @@ Rectangle {
 
                 MouseArea {
                         anchors.fill: parent
-                        onClicked: volLoader.active = !volLoader.active
+                        onClicked: {
+                            if(!volume.active)
+                                volume.active = !volume.active
+                            volume.open = !volume.open
+                        }
                     }
             }
         }
