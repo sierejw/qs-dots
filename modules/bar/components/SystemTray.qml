@@ -9,6 +9,7 @@ import qs.modules.popups
 import qs.services
 
 //TODO: move battery to its own service
+//TODO: add layer disable when user doesn't touches outside of layer for all popups
 
 Rectangle {
     id: root
@@ -18,6 +19,7 @@ Rectangle {
     radius: 10
 
     Volume{id:volume}
+    Power{id:power}
 
     RowLayout {
         id: trayRow
@@ -67,13 +69,13 @@ Rectangle {
                 }
 
                 MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            if(!volume.active)
-                                volume.active = !volume.active
-                            volume.open = !volume.open
-                        }
+                    anchors.fill: parent
+                    onClicked: {
+                        if(!volume.active)
+                            volume.active = !volume.active
+                        volume.open = !volume.open
                     }
+                }
             }
         }
         
