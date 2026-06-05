@@ -29,9 +29,6 @@ LazyLoader{
         margins.right: 115
         color: "transparent"
 
-        
-        property bool loaderActive
-
         Shape {
             id: background
             preferredRendererType: Shape.CurveRenderer

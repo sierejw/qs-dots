@@ -19,7 +19,7 @@ Rectangle {
             Rectangle {
                 id: workspace
                 required property var modelData
-                property bool focused: Hyprland.focusedWorkspace.id === modelData.id
+                property bool focused: Hyprland.focusedWorkspace?.id === modelData.id
                 implicitWidth: 10
                 implicitHeight: 10
                 color: Colors.secondary

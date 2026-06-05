@@ -3,12 +3,14 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.UPower
 import qs.modules.bar.components
+import qs.modules.lock
 import qs.components
 import qs.configs
 import qs.modules.popups
 import qs.services
 
 //TODO: move battery to its own service
+//TODO: add layer disable when user doesn't touches outside of layer for all popups
 
 Rectangle {
     id: root
@@ -17,7 +19,13 @@ Rectangle {
     color: Colors.tertiary
     radius: 10
 
+    required property Lock lock
+
     Volume{id:volume}
+    Power{
+        id:power
+        lock: root.lock
+    }
 
     RowLayout {
         id: trayRow
@@ -67,13 +75,13 @@ Rectangle {
                 }
 
                 MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            if(!volume.active)
-                                volume.active = !volume.active
-                            volume.open = !volume.open
-                        }
+                    anchors.fill: parent
+                    onClicked: {
+                        if(!volume.active)
+                            volume.active = !volume.active
+                        volume.open = !volume.open
                     }
+                }
             }
         }
         
@@ -107,6 +115,15 @@ Rectangle {
                 id: powerIcon
                 text: "\uf011"
                 color: Colors.secondary
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        if (!power.active)
+                            power.active = !power.active
+                        power.open = !power.open
+                    }
+                }
             }
 
             Layout.rightMargin: 5
