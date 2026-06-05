@@ -2,13 +2,15 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import qs.components
+import qs.modules.lock
 import qs.modules.bar.components
 import qs.modules.popups
 import qs.configs
 Scope {
+    id: root
+    required property Lock lock
     Variants {
         model: Quickshell.screens
-        id: scope
 
         PanelWindow {
             required property var modelData
@@ -55,6 +57,7 @@ Scope {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
                 anchors.rightMargin: 20
+                lock: root.lock
             }
         }
     }

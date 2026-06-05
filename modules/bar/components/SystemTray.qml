@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.UPower
 import qs.modules.bar.components
+import qs.modules.lock
 import qs.components
 import qs.configs
 import qs.modules.popups
@@ -18,8 +19,13 @@ Rectangle {
     color: Colors.tertiary
     radius: 10
 
+    required property Lock lock
+
     Volume{id:volume}
-    Power{id:power}
+    Power{
+        id:power
+        lock: root.lock
+    }
 
     RowLayout {
         id: trayRow
@@ -109,6 +115,15 @@ Rectangle {
                 id: powerIcon
                 text: "\uf011"
                 color: Colors.secondary
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        if (!power.active)
+                            power.active = !power.active
+                        power.open = !power.open
+                    }
+                }
             }
 
             Layout.rightMargin: 5

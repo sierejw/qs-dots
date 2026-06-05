@@ -1,5 +1,14 @@
 import Quickshell
-import qs.modules.bar
+import "modules/bar"
+import "modules/lock"
 Scope {
-    Bar {}
+
+    Lock{
+        id: lock
+    }
+    
+    Bar {
+        lock: lock
+    }
+    
 }

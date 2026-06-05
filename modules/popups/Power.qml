@@ -1,35 +1,53 @@
 import QtQuick
 import Quickshell
 import QtQuick.Layouts
+import Quickshell.Wayland
+import qs.modules.lock
 import qs.configs
 import qs.components
 
-//POWER, SLEEP, LOCK, RESTART
-// add text of button name underneath icon (DONE)
-// add highlighting on hover
-// add button functionality
-// create layerrule for it in hypr.config for animation
-// connect to power button
-
 LazyLoader {
     id: root
-    active: true
+    active: false
+    property bool open: false
+    required property Lock lock
+
+    //Component.onCompleted: console.log(lock == undefined);
     PanelWindow {
+
         anchors {
             top: true
             right: true
         }
 
+        WlrLayershell.namespace: "power"
         color: "transparent"
         margins.right: 10
         margins.top: 5
-        implicitWidth: layout.implicitWidth + 15
-        implicitHeight: layout.implicitHeight + 15
+        implicitWidth: background.implicitWidth
+        implicitHeight: background.implicitHeight
+
+        
 
         Rectangle {
-            anchors.fill: parent
+            id: background
+            //anchors.fill: parent
             color: Colors.tertiary
             radius: 10
+            y: root.open ? 0 : -implicitHeight
+
+            implicitWidth: layout.implicitWidth + 15
+            implicitHeight: layout.implicitHeight + 15
+
+            Behavior on y {
+                NumberAnimation {
+                    duration: 200;
+                    onRunningChanged: {
+                        if (background.y == -background.implicitHeight && open == false)
+                            root.active = false
+                    }
+                }
+            }
 
             RowLayout {
                 id: layout
@@ -40,7 +58,7 @@ LazyLoader {
                 property int bordWidth: 3
                 property color bordColor: Colors.primary
                 property real bordRadius: 5
-                property color cellColor: "transparent"
+                property color cellColor: Colors.tertiary
                 property int cellHeight: 60
                 property int cellWidth: 60
                 property color iconColor: Colors.secondary
@@ -52,7 +70,7 @@ LazyLoader {
                     border.color: layout.bordColor
                     border.width: layout.bordWidth
                     radius: layout.bordRadius
-                    color: layout.cellColor
+                    color: powerArea.containsMouse ?  Qt.lighter(layout.cellColor, 1.5) : layout.cellColor
                     ColumnLayout {
                         anchors.centerIn: parent
                         spacing: layout.textSpacing
@@ -70,6 +88,16 @@ LazyLoader {
                             text: "Power"
                         }
                     }
+
+                    MouseArea {
+                        id: powerArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: {
+                            Quickshell.execDetached(["systemctl", "poweroff"]);
+                            root.open = false;
+                        }
+                    }
                     Layout.leftMargin: 10
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 }
@@ -80,7 +108,7 @@ LazyLoader {
                     border.color: layout.bordColor
                     border.width: layout.bordWidth
                     radius: layout.bordRadius
-                    color: layout.cellColor
+                    color: sleepArea.containsMouse ? Qt.lighter(layout.cellColor, 1.5) : layout.cellColor
                     ColumnLayout {
                         anchors.centerIn: parent
                         spacing: layout.textSpacing
@@ -97,6 +125,16 @@ LazyLoader {
                             text: "Sleep"
                         }
                     }
+
+                    MouseArea {
+                        id: sleepArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: {
+                            Quickshell.execDetached(["systemctl", "suspend"]);
+                            root.open = false;
+                        }
+                    }
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 }
 
@@ -106,7 +144,7 @@ LazyLoader {
                     border.color: layout.bordColor
                     border.width: layout.bordWidth
                     radius: layout.bordRadius
-                    color: layout.cellColor
+                    color: lockArea.containsMouse ? Qt.lighter(layout.cellColor, 1.5) : layout.cellColor
                     ColumnLayout {
                         anchors.centerIn: parent
                         spacing: layout.textSpacing
@@ -123,6 +161,16 @@ LazyLoader {
                             text: "Lock"
                         }
                     }
+
+                    MouseArea {
+                        id: lockArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: {
+                            root.lock.lock.locked = true;
+                            root.open = false;
+                        }
+                    }
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 }
 
@@ -132,7 +180,7 @@ LazyLoader {
                     border.color: layout.bordColor
                     border.width: layout.bordWidth
                     radius: layout.bordRadius
-                    color: layout.cellColor
+                    color: restartArea.containsMouse ? Qt.lighter(layout.cellColor): layout.cellColor
 
                     ColumnLayout {
                         anchors.centerIn: parent
@@ -148,6 +196,16 @@ LazyLoader {
                         Text {
                             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                             text: "Restart"
+                        }
+                    }
+
+                    MouseArea {
+                        id: restartArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: {
+                            Quickshell.execDetached(["systemctl", "reboot"]);
+                            root.open = false;
                         }
                     }
                     Layout.rightMargin: 10
