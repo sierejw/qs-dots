@@ -5,7 +5,6 @@ import Quickshell.Services.UPower
 import qs.modules.bar.components
 import qs.modules.lock
 import qs.components
-import qs.configs
 import qs.modules.popups
 import qs.services
 
@@ -26,6 +25,7 @@ Rectangle {
         id:power
         lock: root.lock
     }
+    Network{id: network}
 
     RowLayout {
         id: trayRow
@@ -91,6 +91,13 @@ Rectangle {
                 id: wifiIcon
                 text: "\udb81\udda9"
                 color: Colors.secondary
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    network.active = !network.active
+                }
             }
         }
 

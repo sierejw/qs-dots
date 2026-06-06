@@ -1,6 +1,6 @@
 import Quickshell
-import "modules/bar"
-import "modules/lock"
+import qs.modules.bar
+import qs.modules.lock
 Scope {
 
     Lock{

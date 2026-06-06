@@ -1,5 +1,5 @@
 import QtQuick
-import qs.configs
+import qs.services
 import qs.components
 
 Rectangle {

@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
-import qs.configs
+import qs.services
 
 Rectangle {
     id: root

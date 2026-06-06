@@ -3,7 +3,7 @@ import Quickshell
 import QtQuick.Layouts
 import Quickshell.Wayland
 import qs.modules.lock
-import qs.configs
+import qs.services
 import qs.components
 
 LazyLoader {
@@ -20,7 +20,7 @@ LazyLoader {
             right: true
         }
 
-        WlrLayershell.namespace: "power"
+        WlrLayershell.namespace: "popup"
         color: "transparent"
         margins.right: 10
         margins.top: 5

@@ -4,7 +4,6 @@ import QtQuick.Controls
 import QtQuick.Shapes 1.11
 import QtQuick.Layouts
 import Quickshell.Wayland
-import qs.configs
 import qs.components
 import qs.services
 
@@ -16,7 +15,7 @@ LazyLoader{
     PanelWindow {
         id: volWin
 
-        WlrLayershell.namespace: "volume"
+        WlrLayershell.namespace: "popup"
 
         anchors {
             top: true

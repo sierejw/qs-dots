@@ -5,7 +5,7 @@ import qs.components
 import qs.modules.lock
 import qs.modules.bar.components
 import qs.modules.popups
-import qs.configs
+import qs.services
 Scope {
     id: root
     required property Lock lock
