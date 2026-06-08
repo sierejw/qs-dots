@@ -25,7 +25,7 @@ Rectangle {
         id:power
         lock: root.lock
     }
-    Network{id: network}
+    Wifi{id: wifi}
 
     RowLayout {
         id: trayRow
@@ -96,7 +96,7 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    network.active = !network.active
+                    wifi.active = !wifi.active
                 }
             }
         }
