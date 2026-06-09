@@ -34,7 +34,7 @@ import qs.components
 
 LazyLoader {
     id: root
-    active: true
+    active: false
     onActiveChanged: Network.wirelessDevice.scannerEnabled = active
     PanelWindow {
        
@@ -89,20 +89,47 @@ LazyLoader {
                     Layout.fillWidth: true
                     Layout.preferredHeight: background.implicitHeight - currentNetwork.height
                     model: ScriptModel {
-                        values: Network.availableNetworks//[...Network.availableNetworks].sort((a,b) => b.signalStrength - a.signalStrength)
+                        values: [...Network.availableNetworks].sort((a,b) => {
+                            if (a.signalStrength - b.signalStrength > 0) {
+                                return -1;
+                            }
+
+                            if (b.signalStrength - a.signalStrength) {
+                                return 1;
+                            }
+
+                            if (Network.requiresPassword(a) && !Network.requiresPassword(b)) {
+                                return -1;
+                            }
+
+                            if (Network.requiresPassword(b) && !Network.requiresPassword(a)) {
+                                return 1;
+                            }
+
+                            return a.name - b.name
+                        })
                     }
 
                     delegate: Rectangle {
-                        color: red
+                        color: "transparent"
                         border {
-                            color: Color.secondary
-                            width: 3
+                            color: Colors.secondary
+                            width: 1
                         }
+                        radius: 10
                         implicitHeight: 50
-                        implicitWidth: 50
-
+                        implicitWidth: background.implicitWidth
                         
-
+                        RowLayout {
+                            anchors.verticalCenter: parent.verticalCenter
+                            Icon {
+                                Layout.leftMargin: 10
+                                text: Network.getWifiIcon(modelData)
+                            }
+                            Text { 
+                                text: modelData.name 
+                            }
+                        }
                     }
                 }
             }
