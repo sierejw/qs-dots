@@ -96,17 +96,21 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    wifi.active = !wifi.active
+                    if (!wifi.active)
+                        wifi.active = !wifi.active
+                    wifi.open = !wifi.open
                 }
             }
         }
 
-        Loader {
+        /*Loader {
             sourceComponent: Icon {
-                id: wifiIcon
+                id: bluetoothIcon
                 text: "\udb80\udcaf"
                 color: Colors.secondary
+                visible: false
             }
+            active: false
         }
 
         Loader {
@@ -115,7 +119,8 @@ Rectangle {
                 text: "\ueaf8"
                 color: Colors.secondary
             }
-        }
+            active: false
+        }*/
 
         Loader {
             sourceComponent: Icon {

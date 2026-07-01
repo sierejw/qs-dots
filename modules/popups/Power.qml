@@ -12,9 +12,8 @@ LazyLoader {
     property bool open: false
     required property Lock lock
 
-    //Component.onCompleted: console.log(lock == undefined);
     PanelWindow {
-
+        id: window
         anchors {
             top: true
             right: true
@@ -22,30 +21,30 @@ LazyLoader {
 
         WlrLayershell.namespace: "popup"
         color: "transparent"
-        margins.right: 10
+        margins.right: 5
         margins.top: 5
-        implicitWidth: background.implicitWidth
+        implicitWidth: background.implicitWidth + 20
         implicitHeight: background.implicitHeight
 
         
 
         Rectangle {
             id: background
-            //anchors.fill: parent
             color: Colors.tertiary
             radius: 10
-            y: root.open ? 0 : -implicitHeight
+            x: root.open ? window.implicitWidth - background.implicitWidth : window.implicitWidth
 
             implicitWidth: layout.implicitWidth + 15
             implicitHeight: layout.implicitHeight + 15
 
-            Behavior on y {
+            Behavior on x {
                 NumberAnimation {
-                    duration: 200;
+                    duration: 300;
                     onRunningChanged: {
-                        if (background.y == -background.implicitHeight && open == false)
+                        if (background.x == window.implicitWidth && open == false)
                             root.active = false
                     }
+                    easing.type: Easing.OutBack
                 }
             }
 
