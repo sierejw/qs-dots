@@ -1,8 +1,8 @@
 import QtQuick
 import Quickshell
 import QtQuick.Controls
-import QtQuick.Shapes 1.11
 import QtQuick.Layouts
+import Quickshell.Hyprland
 import Quickshell.Wayland
 import qs.components
 import qs.services
@@ -15,103 +15,112 @@ LazyLoader{
     PanelWindow {
         id: volWin
 
-        WlrLayershell.namespace: "popup"
-
         anchors {
             top: true
             right: true
         }
 
-        implicitHeight: controlWrapper.implicitHeight + 10
-        implicitWidth: volControl.implicitWidth + 30
-        margins.top: -10
-        margins.right: 115
+        WlrLayershell.namespace: "popup"
         color: "transparent"
+        implicitHeight: background.implicitHeight + margin * 2
+        implicitWidth: background.implicitWidth + margin * 10
+        property real margin: 5
+        mask: Region { item: background }
 
-        Shape {
+        Rectangle {
             id: background
-            preferredRendererType: Shape.CurveRenderer
-            property real disX: 10
-            property real disY: 10
-            property real radX: 10
-            property real radY: 10
-            y: root.open ? 0 : -volWin.implicitHeight
-
-            ShapePath {
-                fillColor: Colors.tertiary
-                strokeWidth: 0
-                startX: 0
-                startY: 0
-
-                PathArc  { relativeX: background.disX; relativeY: background.disY; radiusX: background.radX; radiusY: background.radY }
-                PathLine { relativeX: 0; y: volWin.implicitHeight - background.disY}
-                PathArc  { relativeX: background.disX; relativeY: background.disY; radiusX: background.radX; radiusY: background.radY; direction: PathArc.Counterclockwise}
-                PathLine { relativeX: volControl.implicitWidth - background.disX; relativeY: 0}
-                PathArc  { relativeX: background.disX; relativeY: -background.disY; radiusX: background.radX; radiusY: background.radY; direction: PathArc.Counterclockwise}
-                PathLine { relativeX: 0; y: background.disY }
-                PathArc  { relativeX: background.disX; relativeY: -background.disY; radiusX: background.radX; radiusY: background.radY}
-                PathLine { x: 0; y: 0}
-            }
-
-            ColumnLayout {
-                id: controlWrapper
-
+            color: Colors.tertiary
+            implicitHeight: 50
+            implicitWidth: 300
+            radius: 10
+            x: root.open ? volWin.implicitWidth - implicitWidth - volWin.margin : volWin.implicitWidth
+            y: margin
+            
+            RowLayout {
                 anchors.centerIn: parent
-                spacing: 3
-
+                spacing: 10
+                Item {
+                    implicitWidth: 20
+                    implicitHeight: 15
+                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+                    Icon {
+                        text: AudioService.getSoundIcon()
+                        font.pointSize: 15
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        color: Colors.secondary
+                    }
+                }
+                
                 Slider {
                     id: volControl
-
+                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
                     value: AudioService.volume
-                    Layout.alignment: Qt.AlignHCenter
-                    orientation: Qt.Vertical
-                    onMoved: AudioService.setVolume(value)
 
                     background: Rectangle {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        implicitWidth: 6
-                        implicitHeight: 120
-                        width: implicitWidth
-                        radius: 2
+                        implicitWidth: 200
+                        implicitHeight: 5
+                        width: volControl.availableWidth
+                        height: implicitHeight
                         color: Colors.primary
-
+                        anchors.verticalCenter: parent.verticalCenter
+                        radius: 5
                         Rectangle {
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            y: volControl.handle.y
-                            implicitHeight: parent.height - y
+                            width: volControl.visualPosition * parent.width
+                            height: parent.implicitHeight
                             color: Colors.secondary
-                            radius: parent.radius
+                            radius: 5
+
                         }
                     }
 
                     handle: Rectangle {
-                        implicitHeight: 20
-                        implicitWidth: 20
-                        radius: 15
-                        x: volControl.availableWidth / 2 - implicitWidth / 2 
-                        y: volControl.visualPosition * (volControl.availableHeight - height)
+                        implicitWidth: 15
+                        implicitHeight: 15
+                        radius: 10
+                        x: volControl.visualPosition * (volControl.availableWidth - width)
+                        y: volControl.availableHeight / 2 - height / 2
+
+                    }
+                    onMoved: AudioService.setVolume(value)
+                }
+
+                Item {
+                    implicitHeight: 15
+                    implicitWidth: 15
+                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+                    Text {
+                        id: volumeNum
+                        text: Math.trunc(AudioService.volume * 100)
+                        font.pointSize: 10
+                        anchors.centerIn: parent
+                        color: Colors.secondary
                     }
                 }
 
-                Text {
-                    id: volumeNum
-
-                    text: Math.trunc(AudioService.volume * 100)
-                    Layout.alignment: Qt.AlignHCenter
-                    width: Math.ceil(contentWidth)
-                    font.pointSize: 10
-                }
+                
             }
 
-            Behavior on y {
+            Behavior on x {
                 NumberAnimation { 
-                    duration: 200
+                    duration: 300
                     onRunningChanged: {
-                        if (background.y == -volWin.implicitHeight && root.open == false)
+                        if (background.x == volWin.implicitWidth && root.open == false)
                             root.active = false
                     }
+                    easing: Easing.OutBack
                 }
+            }
+        }
+
+        Component.onCompleted: grab.active = true
+
+        HyprlandFocusGrab {
+            id: grab
+            windows: [volWin]
+            onCleared: {
+                root.open = false
+                console.log("hi")
             }
         }
     }

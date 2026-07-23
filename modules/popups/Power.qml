@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import QtQuick.Layouts
 import Quickshell.Wayland
+import Quickshell.Hyprland
 import qs.modules.lock
 import qs.services
 import qs.components
@@ -25,8 +26,7 @@ LazyLoader {
         margins.top: 5
         implicitWidth: background.implicitWidth + 20
         implicitHeight: background.implicitHeight
-
-        
+        mask: Region { item: background }
 
         Rectangle {
             id: background
@@ -211,6 +211,14 @@ LazyLoader {
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 }
             }
+        }
+
+        Component.onCompleted: grab.active = true
+
+        HyprlandFocusGrab {
+            id: grab
+            windows: [window]
+            onCleared: root.open = false
         }
     }
 }

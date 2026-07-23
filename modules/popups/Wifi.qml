@@ -8,6 +8,8 @@
 // Forget network connection
 
 //when selecting network transition into item that loads specifically the network name and options to connect etc, then back to regular
+
+// FIX ANIMATION ON WIFI SELECT
 // 
 import QtQuick
 import Quickshell
@@ -23,20 +25,18 @@ LazyLoader {
     id: root
     active: false
     onActiveChanged: NetworkService.wirelessDevice.scannerEnabled = active
-    property bool open: false
+
     PanelWindow {
         id: window
         anchors {
             right: true
             top: true
         }
-        margins.top: 5
-        margins.right: 5
-        implicitHeight: 600
-        implicitWidth: 400
+
+        implicitHeight: 650
+        implicitWidth: 450
         color: "transparent"
         WlrLayershell.namespace: "popup"
-
         mask: Region { item: background}
         WlrLayershell.keyboardFocus: background.connectionSelected ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
@@ -46,35 +46,23 @@ LazyLoader {
             implicitWidth: connectionSelected ? 400 : 250
             radius: 10
             color: Colors.tertiary
-            
-            x: root.open ? window.implicitWidth - implicitWidth : window.implicitWidth
-
+            anchors.margins: margin
+            y: margin
+            state: "closed"
             property bool connectionSelected: false
+            property real margin: 5
 
             Behavior on implicitWidth {
                 NumberAnimation {
-                    duration: 300
+                    duration: 200
                     easing.type: Easing.InOutCirc
                 }
             }
 
             Behavior on implicitHeight {
                 NumberAnimation {
-                    duration: 300
+                    duration: 200
                     easing.type: Easing.InOutCirc
-                }
-            }
-
-            Behavior on x {
-                NumberAnimation {
-                    duration: 300
-                    //easing.type: Easing.OutCirc
-                    easing.type: Easing.OutBack
-                    onRunningChanged: {
-                        if (background.x == window.implicitWidth && root.open == false) {
-                            root.active = false
-                        }
-                    }
                 }
             }
 
@@ -183,18 +171,14 @@ LazyLoader {
                 }
             }
             
-            // back icon, wifi name, password box, connect button
-
-            // when connect return success -> go back one menu
-            // when connect return failure -> display password incorrect message and empty text field
-            // when retyping after incorrect password -> remove message for password incorrect
             Item {
                 id: connectPanel
                 anchors.fill: parent
                 property WifiNetwork network
+                visible: background.connectionSelected && background.implicitWidth == 400
                 ColumnLayout {
                     anchors.centerIn: parent
-                    visible: background.connectionSelected
+                    
                     spacing: 5
 
                     RowLayout {
@@ -339,16 +323,59 @@ LazyLoader {
                     }
                 }
             }
+
             onConnectionSelectedChanged: incorrectPassText.visible = false
+
+            states: [
+                State {
+                    name: "closed"
+                    PropertyChanges { background.x: window.implicitWidth }
+                },
+                State {
+                    name: "open"
+                    PropertyChanges { background.x: window.implicitWidth - background.implicitWidth - background.margin}
+                }
+            ]
+
+            transitions: [
+                Transition {
+                    from: "closed"
+                    to: "open"
+                    NumberAnimation {
+                        property: "x"
+                        duration: 300
+                        easing.type: Easing.OutBack
+                    }
+                },
+                Transition {
+                    from: "open"
+                    to: "closed"
+                    SequentialAnimation{
+                        NumberAnimation {
+                            property: "x"
+                            duration: 300
+                            easing.type: Easing.OutBack
+                        }
+                        PropertyAction {
+                            target: root
+                            property: "active"
+                            value: false
+                        }
+                    }
+                }
+            ]
         }
 
-        Component.onCompleted: grab.active = true
+        Component.onCompleted: {
+            grab.active = true
+            background.state = "open"
+        }
 
         HyprlandFocusGrab {
             id: grab
             windows: [window]
             onCleared: {
-                root.open = false
+                background.state = "closed"
             }
         }
     }

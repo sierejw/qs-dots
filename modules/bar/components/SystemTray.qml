@@ -62,7 +62,6 @@ Rectangle {
 
         Loader {
             sourceComponent: Rectangle {
-                id: soundIconCont
                 implicitWidth: 20
                 implicitHeight: soundIcon.implicitHeight
                 color: "transparent"
@@ -98,7 +97,6 @@ Rectangle {
                 onClicked: {
                     if (!wifi.active)
                         wifi.active = !wifi.active
-                    wifi.open = !wifi.open
                 }
             }
         }
